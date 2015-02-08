@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+<canvas id="myChart" width="1000" height="600"></canvas>
+
+<script type="text/javascript" src="chart.min.js"></script>
+<script type="text/javascript">
+  function methodSquereCenter(count, firstNumber) {
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+
+    function getNewNumber(number) {
+      number *= number;
+      number = String(number);
+      while(number.length < 8)
+        number = '0' + number;
+      number = number.substr(2,4);
+      return number;
+    };
+
+    var number = (firstNumber) ? firstNumber : getRandomInt(1000, 9999),
+      arr = [];
+      arr.push(getNewNumber(number));
+
+      while(arr.length < count)
+        arr.push(getNewNumber(arr[arr.length-1]));
+
+    return arr;
+  };
+
+  function methodMK(m, k, A0) {    
+    function getZ(m, k, A0) {
+      var A = (k * A0) % m;
+      return A / m;
+    };
+
+    var z = [];
+    z.push(getZ(m, k, A0));
+    for(var i = 1; i < m-1; i++)
+      z.push(getZ(m, k, z[i-1]*m));
+    return z;
+  };
+
+window.onload = function() {
+  // Get the context of the canvas element we want to select
+  var ctx = document.getElementById("myChart").getContext("2d");
+
+  var result = methodSquereCenter(3000);
+  var result2 = methodMK(4313, 3785, 5467);
+
+  var K = 20,
+    names = [],
+    data1 = [],
+    data2 = [];
+  
+  for(var i = 0; i < K; i++) {
+    data1[i] = 0;
+    data2[i] = 0;
+
+    // Мультипликативный конгруэнтный метод
+    for(var j = 0; j < result2.length; j++) {
+      if(result2[j] > (i/K) && result2[j] < ((i+1)/K)) {
+        data2[i]++;
+      }
+    }
+
+    // Метод середины квадрата
+    for(var j = 0; j < result.length; j++) {
+      var g = (i+1)*1000;
+      if(result[j] > g && result[j] < g+999) {
+        data1[i]++;
+      }
+    }
+
+    names.push(((i+1) / K).toString());
+  }
+
+  var data = {
+    labels: names,
+    datasets: [
+        {
+            label: "My First dataset",
+            fillColor: "rgba(220,220,220,0.5)",
+            strokeColor: "rgba(220,220,220,0.8)",
+            highlightFill: "rgba(220,220,220,0.75)",
+            highlightStroke: "rgba(220,220,220,1)",
+            data: data2
+        },
+        {
+            label: "My Second dataset",
+            fillColor: "rgba(151,187,205,0.5)",
+            strokeColor: "rgba(151,187,205,0.8)",
+            highlightFill: "rgba(151,187,205,0.75)",
+            highlightStroke: "rgba(151,187,205,1)",
+            data: data1
+        }
+    ]
+  };
+
+  var options = {
+    //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+    scaleBeginAtZero : true,
+
+    //Boolean - Whether grid lines are shown across the chart
+    scaleShowGridLines : true,
+
+    //String - Colour of the grid lines
+    scaleGridLineColor : "rgba(0,0,0,.05)",
+
+    //Number - Width of the grid lines
+    scaleGridLineWidth : 1,
+
+    //Boolean - Whether to show horizontal lines (except X axis)
+    scaleShowHorizontalLines: true,
+
+    //Boolean - Whether to show vertical lines (except Y axis)
+    scaleShowVerticalLines: true,
+
+    //Boolean - If there is a stroke on each bar
+    barShowStroke : true,
+
+    //Number - Pixel width of the bar stroke
+    barStrokeWidth : 2,
+
+    //Number - Spacing between each of the X value sets
+    barValueSpacing : 5,
+
+    //Number - Spacing between data sets within X values
+    barDatasetSpacing : 1,
+
+    //String - A legend template
+    legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+
+  };
+
+  var myBarChart = new Chart(ctx).Bar(data, options);
+};
+</script>
+</body>
+</html>
