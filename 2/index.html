@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+<canvas id="myChart" class="chart" style="display:inline-block;vertical-align:top;"></canvas>
+<canvas id="myChart2" class="chart" style="display:inline-block;vertical-align:top;"></canvas>
+<canvas id="myChart3" class="chart" style="display:inline-block;vertical-align:top;"></canvas>
+<canvas id="myChart4" class="chart" style="display:inline-block;vertical-align:top;"></canvas>
+
+<script type="text/javascript" src="chart.min.js"></script>
+<script type="text/javascript">
+
+function random_event(P) {
+  var x = methodMK();
+
+  if(x > P)
+    return false;
+  else
+    return true;
+}
+
+window.onload = function() {
+    var ctx = document.getElementById("myChart").getContext("2d"),
+        ctx2 = document.getElementById("myChart2").getContext("2d"),
+        ctx3 = document.getElementById("myChart3").getContext("2d"),
+        ctx4 = document.getElementById("myChart4").getContext("2d"),
+        xCounts = [1, 5, 10, 1000, 5000, 10000],
+        Pa = 0.2, Pb = 0.3, Pba = 0.5;
+        data = {
+            labels: xCounts,
+            datasets: [
+                {
+                    label: "My First dataset",
+                    fillColor: "#4D5360",
+                    strokeColor: "rgba(220,220,220,0.8)",
+                    highlightFill: "#616774",
+                    highlightStroke: "rgba(220,220,220,1)",
+                    data: []
+                }
+            ]
+        };
+    var el = document.getElementsByClassName("chart");
+    for(var i = 0; i < el.length; i++) {
+        el[i].width = window.innerWidth/2 - 50;
+        el[i].height = window.innerHeight/2 - 50;
+    }
+
+    xCounts.map(function(c) {
+        var true_count = 0;
+        for (var i = 0; i < c; i++) {
+            if(random_event(Pa)) true_count++;
+        };
+        data.datasets[0].data.push(true_count / c);
+    });
+
+    var myBarChart = new Chart(ctx).Bar(data);
+
+    // 2
+    data.datasets[0].data = [];
+
+    xCounts.map(function(c) {
+        var true_count = 0;
+        for (var i = 0; i < c; i++) {
+            if(random_event(Pa) && random_event(Pb)) true_count++;
+        };
+        data.datasets[0].data.push(true_count / c);
+    });
+
+    var myBarChart2 = new Chart(ctx2).Bar(data);
+
+    // 3
+    data.datasets[0].data = [];
+
+    data.datasets.push({
+        label: "My First dataset",
+        fillColor: "#46BFBD",
+        strokeColor: "rgba(220,220,220,0.8)",
+        highlightFill: "#5AD3D1",
+        highlightStroke: "rgba(220,220,220,1)",
+        data: []
+    });
+    data.datasets.push({
+        label: "My First dataset",
+        fillColor: "#FDB45C",
+        strokeColor: "rgba(220,220,220,0.8)",
+        highlightFill: "#FFC870",
+        highlightStroke: "rgba(220,220,220,1)",
+        data: []
+    });
+    data.datasets.push({
+        label: "My First dataset",
+        fillColor: "#F7464A",
+        strokeColor: "rgba(220,220,220,0.8)",
+        highlightFill: "#FF5A5E",
+        highlightStroke: "rgba(220,220,220,1)",
+        data: []
+    });
+
+    xCounts.map(function(c) {
+        var all_true_count = 0,
+            b_true_a_false = 0,
+            a_true_b_false = 0,
+            all_false = 0;
+        for (var i = 0; i < c; i++) {
+            var a = random_event(Pa),
+                b;
+
+            if(a)
+                b = random_event(Pba);
+            else
+                b = random_event(Pb);
+
+            if (a && b)
+                all_true_count++;
+            else if (a === true && b === false)
+                a_true_b_false++;
+            else if (a === false && b === true)
+                b_true_a_false++;
+            else if (!a && !b)
+                all_false++;
+        };
+
+        data.datasets[0].data.push(all_true_count / c);
+        data.datasets[1].data.push(a_true_b_false / c);
+        data.datasets[2].data.push(b_true_a_false / c);
+        data.datasets[3].data.push(all_false / c);
+    });
+
+    var myBarChart3 = new Chart(ctx3).Bar(data);
+
+    // 4
+    data.datasets[0].data = [];
+    data.datasets[1].data = [];
+    data.datasets[2].data = [];
+    data.datasets[3].data = [];
+
+    data.datasets.push({
+        label: "My First dataset",
+        fillColor: "#949FB1",
+        strokeColor: "rgba(220,220,220,0.8)",
+        highlightFill: "#A8B3C5",
+        highlightStroke: "rgba(220,220,220,1)",
+        data: []
+    });
+
+    data.datasets.push({
+        label: "My First dataset",
+        fillColor: "#000000",
+        strokeColor: "rgba(220,220,220,0.8)",
+        highlightFill: "#111111",
+        highlightStroke: "rgba(220,220,220,1)",
+        data: []
+    });
+
+    var P6 = [], n = 6, res = Array(n); // группа
+    for(var i = 0; i < n; i++) {
+        P6[i] = 1/n;
+        res[i] = 0;
+    }    
+
+    xCounts.map(function(c) {
+        for (var i = 0; i < c; i++) {
+            var x = methodMK();
+            for(var j = 0; j < n; j ++) {
+                if((1/n*j) <= x && (1/n*(j+1)) > x)
+                    res[j]++;
+            }
+        }
+
+        for(var j = 0; j < n; j ++) {
+            data.datasets[j].data.push(res[j] / c);
+        }
+    });
+
+    var myBarChart4 = new Chart(ctx4).Bar(data);
+}
+
+
+function methodMK() {
+  var m = getRandomInt(0, 5000),
+      k = getRandomInt(0, 5000),
+      A0 = getRandomInt(0, 5000),
+      A = (k * A0) % m;
+    return A / m;
+  };
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+</script>
+</body>
+</html>
